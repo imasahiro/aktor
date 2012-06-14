@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <stdio.h>
+#include <errno.h>
 #include <assert.h>
 #include <pthread.h>
 #include "queue.h"
@@ -224,7 +225,6 @@ static ThreadContext *ThreadContext_new(void)
 
 static void ThreadContext_free(ThreadContext *ctx)
 {
-    fprintf(stderr, "free %p\n", ctx);
     free(ctx);
 }
 
@@ -245,8 +245,10 @@ Queue *Queue_new(int thread_context_malloc)
     q->Head = q->Tail;
 
     if (thread_context_malloc) {
-        if (pthread_key_create(&q->key, (void *) ThreadContext_free) != 0) {
-            fprintf(stderr, "pthread_key_create() error\n");
+        int err;
+        if ((err = pthread_key_create(&q->key, (void *) ThreadContext_free)) != 0) {
+            fprintf(stderr, "pthread_key_create() error %s\n", strerror(err));
+            fprintf(stderr, "%d %d %d\n", err, EAGAIN, ENOMEM);
             abort();
         }
     }

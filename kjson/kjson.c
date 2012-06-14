@@ -66,7 +66,7 @@ static inline JSON JSON_new(json_type type)
 
 static inline JSON toJSON(Value v) { return (JSON) v.pval; }
 
-static JSON JSONString_new(string_builder *builder)
+static JSON JSONString_new2(string_builder *builder)
 {
     JSONString *o = JSON_NEW(String);
     o->str = string_builder_tostring(builder, (size_t*)&o->length, 1);
@@ -78,7 +78,17 @@ static JSON JSONString_new(string_builder *builder)
 #endif
 }
 
-static JSON JSONNull_new()
+JSON JSONString_new(char *s, size_t len)
+{
+    string_builder sb; string_builder_init(&sb);
+    char *const e = s + len;
+    while (s < e) {
+        string_builder_add(&sb, *s++);
+    }
+    return JSONString_new2(&sb);
+}
+
+JSON JSONNull_new()
 {
 #ifdef USE_NUMBOX
     return toJSON(ValueN());
@@ -87,7 +97,7 @@ static JSON JSONNull_new()
 #endif
 }
 
-static JSON JSONObject_new()
+JSON JSONObject_new()
 {
     JSONObject *o = JSON_NEW(Object);
     o->child = poolmap_new(0, json_keygen0,
@@ -98,7 +108,7 @@ static JSON JSONObject_new()
     return (JSON) o;
 }
 
-static JSON JSONArray_new()
+JSON JSONArray_new()
 {
     JSONArray *o = JSON_NEW(Array);
     o->length   = 0;
@@ -109,7 +119,8 @@ static JSON JSONArray_new()
 #endif
     return (JSON) o;
 }
-static JSON JSONDouble_new(double val)
+
+JSON JSONDouble_new(double val)
 {
     JSONNumber *o;
 #ifndef USE_NUMBOX
@@ -124,7 +135,7 @@ static JSON JSONDouble_new(double val)
     return (JSON) o;
 }
 
-static JSON JSONInt_new(long val)
+JSON JSONInt_new(long val)
 {
     JSONNumber *o;
 #ifndef USE_NUMBOX
@@ -137,7 +148,7 @@ static JSON JSONInt_new(long val)
     return (JSON) o;
 }
 
-static JSON JSONBool_new(long val)
+JSON JSONBool_new(long val)
 {
     JSONNumber *o;
 #ifndef USE_NUMBOX
@@ -302,7 +313,7 @@ static JSON parseString(input_stream_iterator *itr, char c)
         string_builder_add(&sb, c);
     }
     L_end:;
-    return (JSON)JSONString_new(&sb);
+    return (JSON)JSONString_new2(&sb);
 }
 
 static JSON parseObject(input_stream_iterator *itr, char c)

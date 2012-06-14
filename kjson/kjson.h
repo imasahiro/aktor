@@ -138,6 +138,15 @@ static inline int JSONBool_get(JSON json)
 #endif
 }
 
+/* [New API] */
+JSON JSONNull_new();
+JSON JSONArray_new();
+JSON JSONObject_new();
+JSON JSONDouble_new(double val);
+JSON JSONString_new(char *s, size_t len);
+JSON JSONInt_new(long val);
+JSON JSONBool_new(long val);
+
 /* [Other API] */
 void JSONObject_set(JSONObject *o, JSON key, JSON value);
 void JSON_free(JSON o);

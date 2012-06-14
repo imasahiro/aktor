@@ -33,3 +33,9 @@ add_test(test_sched test_sched)
 add_executable(test_actor test/test_actor.c)
 target_link_libraries(test_actor actor)
 add_test(test_actor test_actor)
+
+add_executable(test_ring test/ring.c)
+target_link_libraries(test_ring actor)
+add_test(test_ring test_ring)
+
+

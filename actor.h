@@ -49,6 +49,7 @@ void Actor_finalize(Actor *a);
 void Actor_act(Actor *a);
 void Actor_send(Actor *a, JSON message);
 
+#define mfence() asm volatile("" ::: "memory")
 #ifdef __cplusplus
 }
 #endif
