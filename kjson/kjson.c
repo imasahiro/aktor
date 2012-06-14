@@ -812,7 +812,7 @@ char *JSON_toString(JSON json, size_t *len)
     _JSON_toString(&sb, json);
     size_t length;
     char *str = string_builder_tostring(&sb, &length, 1);
-    if (*len) {
+    if (len) {
         *len = length;
     }
     return str;
