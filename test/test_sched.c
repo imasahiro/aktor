@@ -5,7 +5,6 @@ struct MyTask {
     Task base;
 };
 
-#define TASK_DATA(TASK) ((Task*)(TASK)->data)
 int  mytask_run(Task *t)
 {
     long data = (long) TASK_DATA(t);

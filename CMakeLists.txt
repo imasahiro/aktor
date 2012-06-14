@@ -33,6 +33,3 @@ add_test(test_sched test_sched)
 add_executable(test_actor test/test_actor.c)
 target_link_libraries(test_actor actor)
 add_test(test_actor test_actor)
-
-##add_executable(test_stringbuilder test/test_string_builder.c)
-##add_test(test_stringbuilder test_stringbuilder)

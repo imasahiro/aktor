@@ -9,15 +9,15 @@
 extern "C" {
 #endif
 
-int  default_run(Task *t) { return 0; }
-void default_destruct(Task *t) { (void)t; }
+// static int  default_run(Task *t) { return 0; }
+// static void default_destruct(Task *t) { (void)t; }
 
 typedef struct JoinTask {
     struct Task base;
 } JoinTask;
 
-int  join_run(Task *t) { *t->join = 1; return 0; }
-void join_destruct(Task *t) { (void)t; }
+static int  join_run(Task *t) { *t->join = 1; return 0; }
+static void join_destruct(Task *t) { (void)t; }
 
 struct task_api join_task_api = {
     join_run,

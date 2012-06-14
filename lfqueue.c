@@ -250,8 +250,8 @@ Queue *Queue_new(int thread_context_malloc)
             abort();
         }
     }
-    //assert(sizeof(EntryTag) <= sizeof(uint64_t));
-    //assert(sizeof(ExitTag) <= sizeof(uint64_t));
+    assert(sizeof(EntryTag) <= sizeof(uint64_t));
+    assert(sizeof(ExitTag) <= sizeof(uint64_t));
     return q;
 }
 

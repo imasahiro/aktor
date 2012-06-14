@@ -58,7 +58,7 @@ static void file_input_stream_init(input_stream *ins, void **args)
 {
     struct file_data *f;
     size_t bufsize = (size_t) args[1];
-    f = (struct file_data *) malloc(bufsize+sizeof(char*)*3);
+    f = (struct file_data *) malloc(sizeof(struct file_data)+bufsize);
     ins->d0.str = (char*) fopen((char *) args[0], "r");
     ins->d1.ptr = (void*) f;
     f->head = f->buffer;

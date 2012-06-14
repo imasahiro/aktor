@@ -65,7 +65,6 @@ void Actor_finalize(Actor *a)
     free(a);
 }
 
-#define THREAD_ID (((unsigned long)pthread_self()) >> 12)
 int actor_task_run(Task *t)
 {
     ThreadContext *ctx;
@@ -83,7 +82,6 @@ int actor_task_run(Task *t)
 
 void actor_task_destruct(Task *t)
 {
-    fprintf(stderr, "%s %p\n", __func__, t);
 }
 
 struct task_api actor_task_api = {
@@ -91,10 +89,16 @@ struct task_api actor_task_api = {
     actor_task_destruct
 };
 
+/*
+ * sched_id is used for task dispaching. sched_id simulates
+ * round robin dispatch and may be shared by all of threads
+ * but I do not care.
+ */
+static __shared__ int sched_id = 0;
 void Actor_act(Actor *a)
 {
     ActorStage *stage = global_stage;
-    int sched_id = THREAD_ID & (global_max_cores-1);
+    sched_id = (sched_id+1) & (global_max_cores-1);
     Scheduler_enqueue(stage->sched[sched_id],
             Task_new((void*) a, &actor_task_api));
 }

@@ -1,7 +1,6 @@
 #include "kjson.h"
 #include "stream.h"
 #include "string_builder.h"
-#include "memory.h"
 #include "map.h"
 #include "hash.h"
 
@@ -207,7 +206,7 @@ static void JSONArray_append(JSONArray *a, JSON o)
 #endif
     if (a->length + 1 >= a->capacity) {
         uint32_t newsize = 1 << SizeToKlass(a->capacity * 2 + 1);
-        a->list = realloc(a->list, newsize * sizeof(JSON*));
+        a->list = realloc(a->list, newsize * sizeof(JSON));
         a->capacity = newsize;
     }
     a->list[a->length++] = o;
@@ -218,6 +217,7 @@ static void _JSONObject_set(JSONObject *o, JSONString *key, JSON value)
 #ifdef USE_NUMBOX
     o = toJSONObject(toObj(toVal((JSON)o)));
 #endif
+    assert(key && value);
     assert(JSON_type(value) < 8);
     poolmap_set(o->child, (char *) key, 0, value);
 }
