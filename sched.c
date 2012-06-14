@@ -9,14 +9,14 @@
 extern "C" {
 #endif
 
-void default_run(Task *t) { (void)t; }
+int  default_run(Task *t) { return 0; }
 void default_destruct(Task *t) { (void)t; }
 
 typedef struct JoinTask {
     struct Task base;
 } JoinTask;
 
-void join_run(Task *t) { *t->join = 1; }
+int  join_run(Task *t) { *t->join = 1; return 0; }
 void join_destruct(Task *t) { (void)t; }
 
 struct task_api join_task_api = {
@@ -73,7 +73,7 @@ Scheduler *Scheduler_new(unsigned max_workers)
     if (max_workers) {
     }
     Scheduler *s = (Scheduler *) calloc(1, sizeof(Scheduler));
-    s->q = Queue_new();
+    s->q = Queue_new(1);
     assert(max_workers > 0);
     s->workers = (Worker **) calloc(1, sizeof(Worker*) * max_workers);
     for (i = 0; i < max_workers; ++i) {
@@ -94,14 +94,16 @@ void Scheduler_delete(Scheduler *sched)
 
 void Scheduler_enqueue(Scheduler *s, Task *task)
 {
-    Queue_enq(&s->ctx, s->q, (Data) task);
+    ThreadContext *ctx = Queue_getContext(s->q);
+    Queue_enq(ctx, s->q, (Data) task);
 }
 
 void Scheduler_join(Scheduler *s) {
     size_t i;
+    ThreadContext *ctx = Queue_getContext(s->q);
     for (i = 0; i < s->active_workers; ++i) {
         JoinTask *task = (JoinTask *) Task_new(0, &join_task_api);
-        Queue_enq(&s->ctx, s->q, (Data) task);
+        Queue_enq(ctx, s->q, (Data) task);
     }
     for (i = 0; i < s->active_workers; ++i) {
         Worker *w = s->workers[i];
@@ -121,8 +123,11 @@ static void *Worker_exec(void *arg)
         Task *t;
         if ((t = (Task*)Queue_deq(&ctx, q)) != NULL) {
             t->join = &w->join;
-            t->api.run(t);
-            Task_delete(t);
+            if (t->api.run(t)) {
+                Queue_enq(&ctx, q, (Data) t);
+            } else {
+                Task_delete(t);
+            }
         }
     }
     return NULL;

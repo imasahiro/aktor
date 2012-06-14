@@ -14,7 +14,7 @@ Queue *q;
 int main(int argc, char const* argv[])
 {
     int i, max = 1000;
-    q = Queue_new();
+    q = Queue_new(0);
     ThreadContext ctx = {0, NULL};
     for (i = 0; i < max; i++) {
         Queue_enq(&ctx, q, i);
@@ -83,7 +83,7 @@ static inline uint64_t gettime(void)
 
 static int test_parallel(void)
 {
-    lfqueue = Queue_new();
+    lfqueue = Queue_new(0);
     int64_t enquestart,enqueend,dequestart,dequeend;
     pthread_t threads[CORE];
     printf("%d thread initialized, %d items  \n",CORE, MAX);

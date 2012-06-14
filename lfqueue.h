@@ -46,12 +46,14 @@ typedef struct ThreadContext {
 struct Queue;
 typedef struct Queue Queue;
 
-Queue *Queue_new(void);
+Queue *Queue_new(int thread_context_malloc);
 void Queue_enq(ThreadContext *ctx, Queue *q, Data d);
 Data Queue_deq(ThreadContext *ctx, Queue *q);
 void Queue_dump(Queue *q);
 int  Queue_isEmpty(Queue *q);
 void Queue_delete(Queue *q);
+
+ThreadContext *Queue_getContext(Queue *q);
 
 #ifdef __cplusplus
 }

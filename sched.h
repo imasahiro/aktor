@@ -7,9 +7,11 @@ extern "C" {
 
 struct Task;
 struct task_api {
-    void (*run)(struct Task *task);
+    int  (*run)(struct Task *task);
     void (*destruct)(struct Task *task);
 };
+
+#define TASK_DATA(TASK) ((Task*)(TASK)->data)
 
 typedef struct Task {
     struct task_api api;
@@ -27,7 +29,7 @@ void Scheduler_enqueue(struct Scheduler *sched, struct Task *task);
 void Scheduler_join(struct Scheduler *sched);
 
 #ifdef __cplusplus
-extern "C" {
+}
 #endif
 
 #endif /* end of include guard */

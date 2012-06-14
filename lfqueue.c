@@ -2,6 +2,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <assert.h>
+#include <pthread.h>
 #include "lfqueue.h"
 
 #ifdef __cplusplus
@@ -36,6 +37,7 @@ typedef struct Loc {
 struct Queue {
     Loc Tail;
     Loc Head;
+    pthread_key_t key;
 };
 
 #define CURRENT(loc, ver)        ((ver % 2 == 0)?( (loc)->ptr0):( (loc)->ptr1))
@@ -206,7 +208,20 @@ Data Queue_deq(ThreadContext *ctx, Queue *q)
     }
 }
 
-Queue *Queue_new(void)
+
+static ThreadContext *ThreadContext_new(void)
+{
+    ThreadContext *ctx = (ThreadContext *) calloc(1, sizeof(*ctx));
+    return ctx;
+}
+
+static void ThreadContext_free(ThreadContext *ctx)
+{
+    fprintf(stderr, "free %p\n", ctx);
+    free(ctx);
+}
+
+Queue *Queue_new(int thread_context_malloc)
 {
     Queue *q = malloc(sizeof(*q));
     q->Tail.entry.ver = 0;
@@ -222,8 +237,14 @@ Queue *Queue_new(void)
     q->Tail.ptr1->exit.toBeFreed = 0;
     q->Head = q->Tail;
 
-    assert(sizeof(EntryTag) <= sizeof(uint64_t));
-    assert(sizeof(ExitTag) <= sizeof(uint64_t));
+    if (thread_context_malloc) {
+        if (pthread_key_create(&q->key, (void *) ThreadContext_free) != 0) {
+            fprintf(stderr, "pthread_key_create() error\n");
+            abort();
+        }
+    }
+    //assert(sizeof(EntryTag) <= sizeof(uint64_t));
+    //assert(sizeof(ExitTag) <= sizeof(uint64_t));
     return q;
 }
 
@@ -248,6 +269,18 @@ void Queue_delete(Queue *q)
 {
     bzero(q, sizeof(*q));
     free(q);
+}
+
+ThreadContext *Queue_getContext(Queue *q)
+{
+    ThreadContext *ctx = (ThreadContext *)pthread_getspecific(q->key);
+    if (!ctx) {
+        ctx = ThreadContext_new();
+        if (pthread_setspecific(q->key, (void *) ctx) != 0) {
+            assert(0 && "pthread_setspecific() error");
+        }
+    }
+    return ctx;
 }
 
 #ifdef __cplusplus

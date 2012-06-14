@@ -6,14 +6,14 @@ struct MyTask {
 };
 
 #define TASK_DATA(TASK) ((Task*)(TASK)->data)
-void mytask_run(Task *t)
+int  mytask_run(Task *t)
 {
     long data = (long) TASK_DATA(t);
     fprintf(stderr, "%ld\n", data);
+    return 0;
 }
 
-void mytask_destruct(Task *t) {
-}
+void mytask_destruct(Task *t) {}
 
 struct task_api mytask_api = {
     mytask_run,

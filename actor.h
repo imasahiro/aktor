@@ -32,8 +32,7 @@ typedef union JSON Message;
 
 struct Actor;
 struct actor_api {
-    Message *(*send)(void);
-    void (*act)(Message *);
+    int  (*act)(struct Actor *, Message *);
     void (*finit)(struct Actor *);
     void (*fexit)(struct Actor *);
 };
@@ -42,11 +41,13 @@ typedef Queue MailBox;
 typedef struct Actor {
     const struct actor_api *api;
     MailBox *mailbox;
-    JSONObject *self;
+    JSON self;
 } Actor;
 
-Actor *Actor_new(JSONObject *o, const struct actor_api *api);
+Actor *Actor_new(JSON o, const struct actor_api *api);
 void Actor_finalize(Actor *a);
+void Actor_act(Actor *a);
+void Actor_send(Actor *a, JSON message);
 
 #ifdef __cplusplus
 }
