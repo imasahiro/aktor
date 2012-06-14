@@ -143,15 +143,17 @@ JSON JSONArray_new();
 JSON JSONObject_new();
 JSON JSONDouble_new(double val);
 JSON JSONString_new(char *s, size_t len);
-JSON JSONInt_new(long val);
-JSON JSONBool_new(long val);
+JSON JSONInt_new(int val);
+JSON JSONBool_new(int val);
 
 /* [Other API] */
 void JSONObject_set(JSONObject *o, JSON key, JSON value);
+void JSONArray_append(JSONArray *a, JSON o);
 void JSON_free(JSON o);
 void JSON_dump(FILE *fp, JSON json);
 JSON parseJSON(char *s, char *e);
 JSON parseJSON_fromFILE(char *file);
+char *JSON_toString(JSON json, size_t *len);
 
 #ifdef USE_NUMBOX
 static inline kjson_type JSON_type(JSON json) {

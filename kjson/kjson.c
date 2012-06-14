@@ -135,7 +135,7 @@ JSON JSONDouble_new(double val)
     return (JSON) o;
 }
 
-JSON JSONInt_new(long val)
+JSON JSONInt_new(int val)
 {
     JSONNumber *o;
 #ifndef USE_NUMBOX
@@ -148,7 +148,7 @@ JSON JSONInt_new(long val)
     return (JSON) o;
 }
 
-JSON JSONBool_new(long val)
+JSON JSONBool_new(int val)
 {
     JSONNumber *o;
 #ifndef USE_NUMBOX
@@ -210,7 +210,7 @@ void JSON_free(JSON o)
     }
 }
 
-static void JSONArray_append(JSONArray *a, JSON o)
+void JSONArray_append(JSONArray *a, JSON o)
 {
 #ifdef USE_NUMBOX
     a = toJSONArray(toAry(toVal((JSON)a)));
@@ -423,7 +423,7 @@ static JSON parseNumber(input_stream_iterator *itr, char c)
         double d = strtod(s, &e);
         n = JSONDouble_new(d);
     } else {
-        long val = strtol(s, &e, 10);
+        int val = strtol(s, &e, 10);
         n = JSONInt_new(val);
     }
     free(s);
@@ -690,6 +690,133 @@ JSONString *JSONObject_iterator_next(JSONObject_iterator *itr, JSON *val)
     return NULL;
 }
 
+static void JSONString_toString(string_builder *sb, JSONString *o);
+static void _JSON_toString(string_builder *sb, JSON json);
+
+static void JSONObject_toString(string_builder *sb, JSONObject *o)
+{
+    pmap_record_t *r;
+    poolmap_iterator itr = {0};
+    string_builder_add(sb, '{');
+#ifdef USE_NUMBOX
+    o = toJSONObject(toObj(toVal((JSON)o)));
+#endif
+    int i = 0;
+    while ((r = poolmap_next(o->child, &itr)) != NULL) {
+        if (i != 0) {
+            string_builder_add(sb, ',');
+        }
+        i = 1;
+        JSONString_toString(sb, (JSONString*)r->k);
+        string_builder_add(sb, ':');
+        _JSON_toString(sb, (JSON)r->v);
+    }
+    string_builder_add(sb, '}');
+}
+
+static void JSONArray_toString(string_builder *sb, JSONArray *a)
+{
+    JSON *s, *e;
+    int i = 0;
+    string_builder_add(sb, '[');
+    JSON_ARRAY_EACH(a, s, e) {
+        if (i != 0) {
+            string_builder_add(sb, ',');
+        }
+        i = 1;
+        _JSON_toString(sb, *s);
+    }
+    string_builder_add(sb, ']');
+}
+
+static void JSONString_toString(string_builder *sb, JSONString *o)
+{
+#ifdef USE_NUMBOX
+    o = toJSONString(toStr(toVal((JSON)o)));
+#endif
+    string_builder_add(sb, '"');
+    string_builder_add_string(sb, o->str, o->length);
+    string_builder_add(sb, '"');
+}
+
+static void JSONInt_toString(string_builder *sb, JSONInt *o)
+{
+    int32_t i;
+#ifdef USE_NUMBOX
+    i = toInt32(toVal(o));
+#else
+    i = (int)o->val;
+#endif
+    string_builder_add_int(sb, i);
+}
+
+static void JSONDouble_toString(string_builder *sb, JSONDouble *o)
+{
+    char buf[64];
+    double d;
+#ifdef USE_NUMBOX
+    d = toDouble(toVal(o));
+#else
+    union v { double d; long v; } v;
+    v.v = o->val;
+    d = v.d;
+#endif
+    int len = snprintf(buf, 64, "%g", d);
+    string_builder_add_string(sb, buf, len);
+}
+
+static void JSONBool_toString(string_builder *sb, JSONBool *o)
+{
+    int b;
+#ifdef USE_NUMBOX
+    b = toBool(toVal(o));
+#else
+    b = o->val;
+#endif
+    char *str = (b) ? "true" : "false";
+    size_t len =  (b)? 4/*strlen("ture")*/ : 5/*strlen("false")*/;
+    string_builder_add_string(sb, str, len);
+}
+
+static void JSONNull_toString(string_builder *sb, JSONNull *o)
+{
+    string_builder_add_string(sb, "null", 4);
+}
+
+static void _JSON_toString(string_builder *sb, JSON json)
+{
+#ifdef USE_NUMBOX
+    if (IsDouble((toVal(json)))) {
+        JSONDouble_toString(sb, (JSONDouble*)json);
+        return;
+    }
+#endif
+    switch (JSON_type(json)) {
+#define CASE(T, SB, O) case JSON_##T: JSON##T##_toString(SB, (JSON##T *) O); break
+        CASE(Object, sb, json);
+        CASE(Array, sb, json);
+        CASE(String, sb, json);
+        CASE(Int, sb, json);
+        CASE(Double, sb, json);
+        CASE(Bool, sb, json);
+        CASE(Null, sb, json);
+        default:
+            assert(0 && "NO tostring func");
+#undef CASE
+    }
+}
+
+char *JSON_toString(JSON json, size_t *len)
+{
+    string_builder sb; string_builder_init(&sb);
+    _JSON_toString(&sb, json);
+    size_t length;
+    char *str = string_builder_tostring(&sb, &length, 1);
+    if (*len) {
+        *len = length;
+    }
+    return str;
+}
 #ifdef __cplusplus
 }
 #endif

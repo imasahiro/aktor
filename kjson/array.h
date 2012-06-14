@@ -43,6 +43,12 @@ static inline void ARRAY_##T##_add(ARRAY(T) *a, T *v) {\
 	}\
 	ARRAY_##T##_set(a, a->size++, v);\
 }\
+static inline void ARRAY_##T##_ensureSize(ARRAY(T) *a, size_t size) {\
+	while (a->size + size >= a->capacity) {\
+		a->capacity *= 2;\
+	}\
+	a->list = (T*)realloc(a->list, sizeof(T) * a->capacity);\
+}\
 static inline void ARRAY_##T##_dispose(ARRAY(T) *a) {\
 	free(a->list);\
 	a->size     = 0;\
@@ -70,13 +76,18 @@ static inline void ARRAY_##T##_add(ARRAY(T) *a, T v) {\
 	}\
 	ARRAY_##T##_set(a, a->size++, v);\
 }\
+static inline void ARRAY_##T##_ensureSize(ARRAY(T) *a, size_t size) {\
+	while (a->size + size >= a->capacity) {\
+		a->capacity *= 2;\
+	}\
+	a->list = (T*)realloc(a->list, sizeof(T) * a->capacity);\
+}\
 static inline void ARRAY_##T##_dispose(ARRAY(T) *a) {\
 	free(a->list);\
 	a->size     = 0;\
 	a->capacity = 0;\
 	a->list     = NULL;\
 }
-
 
 #define DEF_ARRAY_T_OP(T) DEF_ARRAY_T(T);DEF_ARRAY_OP(T)
 
@@ -85,6 +96,7 @@ static inline void ARRAY_##T##_dispose(ARRAY(T) *a) {\
 #define ARRAY_add(T, a, v)      ARRAY_##T##_add(a, v)
 #define ARRAY_dispose(T, a)     ARRAY_##T##_dispose(a)
 #define ARRAY_init(T, a, s)     ARRAY_init_##T (a, s)
+#define ARRAY_ensureSize(T, a, size) ARRAY_##T##_ensureSize(a, size)
 #define ARRAY_n(a, n)  ((a).list+n)
 #define ARRAY_size(a)  ((a).size)
 #define ARRAY_last(a)  ARRAY_n(a, ((a).size-1))

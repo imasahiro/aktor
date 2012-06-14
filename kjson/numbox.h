@@ -30,7 +30,9 @@ static inline Value ValueF(double d) {
     Value v; v.dval = d; return v;
 }
 static inline Value ValueI(int32_t ival) {
-    Value v; v.bits = (uint64_t)ival | TagInt32; return v;
+    uint64_t n = (uint64_t)ival;
+    n = n & 0x00000000ffffffffLL;
+    Value v; v.bits = n | TagInt32; return v;
 }
 static inline Value ValueB(bool bval) {
     Value v; v.bits = (uint64_t)bval | TagBoolean; return v;

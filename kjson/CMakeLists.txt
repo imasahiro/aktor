@@ -65,3 +65,8 @@ add_test(test_stream test_stream ${JSON_TEST_CODE_LIST}
 
 add_executable(test_stringbuilder test/test_string_builder.c)
 add_test(test_stringbuilder test_stringbuilder)
+
+add_executable(test_tostring test/test_tostring.c)
+target_link_libraries(test_tostring kjson)
+add_test(test_tostring test_tostring)
+
