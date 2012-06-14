@@ -1,0 +1,44 @@
+JSON(JavaScript Object Notation) parser for KonohaScript
+
+[Parse API]
+  JSON *parseJSON(char *s, char *e);
+  JSON *parseJSON_fromFILE(char *file);
+
+[Getter API]
+  unsigned JSON_length (JSON *json);
+  JSON*  JSON_get      (JSON *json, char *key);
+  JSON** JSON_getArray (JSON *json, char *key, size_t *len);
+  char*  JSON_getString(JSON *json, char *key, size_t *len);
+  double JSON_getDouble(JSON *json, char *key);
+  int    JSON_getBool  (JSON *json, char *key);
+  int    JSON_getInt   (JSON *json, char *key);
+
+[Iterator API]
+  /* Object Iteration */
+  void f(JSONObject o) {
+    JSONString *Key; JSON Val;
+    JSONObject_iterator Itr;
+    JSON_OBJECT_EACH(o, Itr, Key, Val) {
+        JSON_dump(stdout, (JSON)Key);
+        JSON_dump(stdout, Val);
+    }
+  }
+  /* Array Iteration */
+  void f(JSONArray *a) {
+    JSON *s, *e;
+    JSON_ARRAY_EACH(a, s, e) {
+        JSON_dump(*s);
+    }
+  }
+
+[Other API]
+  void JSON_free(JSON *o);
+  void JSON_dump(FILE *fp, JSON *json);
+
+[test/benchmark*.json]
+  Original code was copied from:
+  kraken-1.1/kraken/tests/kraken-1.1/ai-astar-data.js
+  kraken-1.1/audio-beat-detection-data.js
+  kraken-1.1/stanford-crypto-ccm-data.js
+  kraken-1.1/imaging-desaturate-data.js
+  kraken-1.1/json-parse-financial-data.js
