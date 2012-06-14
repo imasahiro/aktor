@@ -1,5 +1,2 @@
 Actor Library
 
-[Dependency]
-  This library need KJSON(JSON library for KonohaScript)
-
