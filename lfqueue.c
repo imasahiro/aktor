@@ -1,9 +1,16 @@
+/*
+ * LL/SC based Lock-Free Queue
+ *
+ * "Bringing Practical LockFree Synchronization to 64Bit Applications"
+ *  by Simon Doherty, Maurice Herlihy, Victor Luchangco, Mark Moir
+ */
+
 #include <stdlib.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <assert.h>
 #include <pthread.h>
-#include "lfqueue.h"
+#include "queue.h"
 
 #ifdef __cplusplus
 extern "C" {

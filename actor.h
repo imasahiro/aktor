@@ -1,6 +1,6 @@
 #include "kjson/kjson.h"
 #include "sched.h"
-#include "lfqueue.h"
+#include "queue.h"
 
 #ifndef ACTOR_H
 #define ACTOR_H

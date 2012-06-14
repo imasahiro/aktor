@@ -20,10 +20,6 @@
  * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- ***************************************************************************
- * LL/SC based Lock-Free Queue
- * "Bringing Practical LockFree Synchronization to 64Bit Applications"
- *  by Simon Doherty, Maurice Herlihy, Victor Luchangco, Mark Moir
  ***************************************************************************/
 
 #include <stdint.h>

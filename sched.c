@@ -1,4 +1,4 @@
-#include "lfqueue.h"
+#include "queue.h"
 #include "sched.h"
 #include <pthread.h>
 #include <assert.h>

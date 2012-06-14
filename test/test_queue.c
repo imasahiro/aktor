@@ -2,7 +2,7 @@
 #include <assert.h>
 #include <sys/time.h>
 #include <pthread.h>
-#include "lfqueue.h"
+#include "queue.h"
 
 #ifdef __cplusplus
 extern "C" {
