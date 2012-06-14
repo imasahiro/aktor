@@ -34,8 +34,8 @@ int main(int argc, char const* argv[])
     return 0;
 }
 
-#define MAX 20000000
-#define CORE 8
+#define MAX 2000
+#define CORE 2
 static inline void atomic_add(volatile long *v, int n)
 {
     __sync_fetch_and_add(v, n);
@@ -56,7 +56,7 @@ void *e(void *arg)
     ThreadContext ctx = {};
     for(i=0 ;i<MAX/CORE; i++){
         long v = i + offset;
-        enqueue(lfqueue, v);
+        Queue_enq(&ctx, lfqueue, v);
         atomic_sub(&counter, v);
     }
     return NULL;
@@ -67,7 +67,8 @@ void *d(void *arg)
     void *v = NULL;
     ThreadContext ctx = {};
     while (!Queue_isEmpty(lfqueue)) {
-        dequeue(lfqueue, &v);
+        fprintf(stderr, "T %d, %p\n", Queue_isEmpty(lfqueue), arg);
+        v = (void *) Queue_deq(&ctx, lfqueue);
         atomic_add(&counter, (long) v);
     }
     return NULL;
@@ -91,7 +92,7 @@ static int test_parallel(void)
     enquestart = gettime();
     int i;
     for(i = 0; i < CORE; i++){
-        pthread_create(&threads[i], NULL, e, (void*)(0L+i*MAX/CORE));
+        pthread_create(&threads[i], NULL, e, (void*)(0L+i*(MAX/CORE)));
     }
     for (i = 0; i < CORE; ++i) {
         pthread_join(threads[i], NULL);

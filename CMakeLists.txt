@@ -16,8 +16,8 @@ SET(CMAKE_C_FLAGS_DEBUG   "-O0 -g3")
 
 add_subdirectory(kjson)
 
-set(ACTOR_SRC actor.c lfqueue.c)
-add_library(actor ${ACTOR_SRC})
+set(ACTOR_SRC actor.c lfqueue.c sched.c)
+add_library(actor SHARED ${ACTOR_SRC})
 target_link_libraries(actor kjson)
 
 ## Test cases
@@ -25,6 +25,14 @@ enable_testing()
 add_executable(test_lfqueue test/test_lfqueue.c)
 target_link_libraries(test_lfqueue actor)
 add_test(test_lfqueue test_lfqueue)
+
+add_executable(test_sched test/test_sched.c)
+target_link_libraries(test_sched actor)
+add_test(test_sched test_sched)
+
+add_executable(test_actor test/test_actor.c)
+target_link_libraries(test_actor actor)
+add_test(test_actor test_actor)
 
 ##add_executable(test_stringbuilder test/test_string_builder.c)
 ##add_test(test_stringbuilder test_stringbuilder)

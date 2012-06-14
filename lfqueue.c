@@ -4,6 +4,10 @@
 #include <assert.h>
 #include "lfqueue.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef struct EntryTag {
     int32_t ver;
     int32_t count;
@@ -240,10 +244,11 @@ int Queue_isEmpty(Queue *q)
     return cur->next == NULL;
 }
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
+void Queue_delete(Queue *q)
+{
+    bzero(q, sizeof(*q));
+    free(q);
+}
 
 #ifdef __cplusplus
 }

@@ -27,6 +27,7 @@
  ***************************************************************************/
 
 #include <stdint.h>
+#include <string.h>
 #ifndef LFQUEUE_H_
 #define LFQUEUE_H_
 
@@ -50,6 +51,7 @@ void Queue_enq(ThreadContext *ctx, Queue *q, Data d);
 Data Queue_deq(ThreadContext *ctx, Queue *q);
 void Queue_dump(Queue *q);
 int  Queue_isEmpty(Queue *q);
+void Queue_delete(Queue *q);
 
 #ifdef __cplusplus
 }
