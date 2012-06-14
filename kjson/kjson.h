@@ -9,7 +9,7 @@
 extern "C" {
 #endif
 
-typedef enum json_type {
+typedef enum kjson_type {
     /** ($type & 1 == 0) means $type extends Number */
     JSON_Null   =  6, /* 110 */
     JSON_Bool   =  4, /* 100 */
@@ -18,14 +18,14 @@ typedef enum json_type {
     JSON_Object =  3, /* 011 */
     JSON_String =  1, /* 001 */
     JSON_Array  =  5  /* 101 */
-} json_type;
+} kjson_type;
 
 union JSON;
 typedef union JSON * JSON;
 
 typedef struct JSONString {
 #ifndef USE_NUMBOX
-    json_type type;
+    kjson_type type;
 #endif
     int length;
     char *str;
@@ -33,7 +33,7 @@ typedef struct JSONString {
 
 typedef struct JSONArray {
 #ifndef USE_NUMBOX
-    json_type type;
+    kjson_type type;
 #endif
     int  length;
     int  capacity;
@@ -42,7 +42,7 @@ typedef struct JSONArray {
 
 #ifndef USE_NUMBOX
 typedef struct JSONNumber {
-    json_type type;
+    kjson_type type;
     long val;
 } JSONNumber;
 #else
@@ -56,7 +56,7 @@ typedef JSONNumber JSONBool;
 struct poolmap_t;
 typedef struct JSONObject {
 #ifndef USE_NUMBOX
-    json_type type;
+    kjson_type type;
 #endif
     struct poolmap_t *child;
 } JSONObject;
@@ -64,7 +64,7 @@ typedef struct JSONObject {
 union JSON {
 #ifndef USE_NUMBOX
     struct JSON_base {
-        json_type type;
+        kjson_type type;
     } base;
 #endif
     JSONString str;
@@ -99,13 +99,12 @@ int JSON_getBool(JSON json, char *key);
 int JSON_getInt(JSON json, char *key);
 JSON JSON_get(JSON json, char *key);
 
-static inline char *JSONString_get(JSON json, size_t *len)
+static inline char *JSONString_get(JSON json)
 {
     JSONString *s = toJSONString(json);
 #ifdef USE_NUMBOX
     s = toJSONString(toStr(toVal(s)));
 #endif
-    *len = s->length;
     return s->str;
 }
 
@@ -155,11 +154,11 @@ JSON parseJSON(char *s, char *e);
 JSON parseJSON_fromFILE(char *file);
 
 #ifdef USE_NUMBOX
-static inline json_type JSON_type(JSON json) {
+static inline kjson_type JSON_type(JSON json) {
     Value v; v.bits = (uint64_t)json;
     uint64_t tag = Tag(v);
     return (IsDouble((v)))?
-        JSON_Double : (enum json_type) ((tag >> TagBitShift) & 7);
+        JSON_Double : (kjson_type) ((tag >> TagBitShift) & 7);
 }
 #define JSON_set_type(json, type) assert(0 && "Not supported")
 #else

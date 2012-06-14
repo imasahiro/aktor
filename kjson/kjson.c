@@ -55,7 +55,7 @@ static void json_recfree(pmap_record_t *r)
 
 #define JSON_NEW(T) (JSON##T *) JSON_new(JSON_##T)
 
-static inline JSON JSON_new(json_type type)
+static inline JSON JSON_new(kjson_type type)
 {
     JSON json = (JSON) calloc(1, sizeof(union JSON));
 #ifndef USE_NUMBOX
@@ -383,7 +383,7 @@ static JSON parseNumber(input_stream_iterator *itr, char c)
 {
     assert((c == '-' || ('0' <= c && c <= '9')) && "It do not seem as Number");
     string_builder sb; string_builder_init(&sb);
-    json_type type = JSON_Int;
+    kjson_type type = JSON_Int;
     if (c == '-') { string_builder_add(&sb, c);c = NEXT(itr); }
     if (c == '0') {
         string_builder_add(&sb, c);

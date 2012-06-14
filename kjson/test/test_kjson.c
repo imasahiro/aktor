@@ -87,7 +87,7 @@ static void test_object_iterator(void)
     assert(JSON_type((JSON)o) == JSON_Object);
     //assert(JSON_length((JSON)child) == 3);
     /* XXX this test depends on imprementation of map data. */
-    static const json_type types[] = {
+    static const kjson_type types[] = {
         JSON_Bool,
         JSON_Int,
         JSON_String,
