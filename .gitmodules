@@ -1,0 +1,3 @@
+[submodule "kjson"]
+	path = kjson
+	url = git://github.com/imasahiro/kjson.git
