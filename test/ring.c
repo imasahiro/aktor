@@ -14,7 +14,7 @@ static void ring_actor_exit(Actor *a) { /* do nothing */ }
 Actor **node_list;
 static int ring_actor_act(Actor *a, Message *message)
 {
-    if (JSON_type(message) == JSON_Int) {
+    if (JSON_type(message) == JSON_Int32) {
         int index = JSONInt_get(a->self);
         Actor *next = node_list[index-1];
         fprintf(stderr, "actor: %d=>%d\n", index, index-1);
@@ -25,7 +25,7 @@ static int ring_actor_act(Actor *a, Message *message)
 
 int ring_actor_act_2(Actor *a, Message *message)
 {
-    if (JSON_type(message) == JSON_Int) {
+    if (JSON_type(message) == JSON_Int32) {
         int *data = (int *) a->self;
         *data = 1;
     }
