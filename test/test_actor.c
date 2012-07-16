@@ -12,7 +12,7 @@ void my_actor_exit(Actor *a) { /* do nothing */ }
 
 int my_actor_act(Actor *a, Message *message)
 {
-    if (JSON_type(message) == JSON_Int) {
+    if (JSON_type(message) == JSON_Int32) {
         fprintf(stderr, "actor:%d, %d\n",
                 JSONInt_get(a->self),
                 JSONInt_get(message));
