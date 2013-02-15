@@ -14,12 +14,13 @@ SET(CMAKE_C_FLAGS         "-Wall -Wno-variadic-macros")
 SET(CMAKE_C_FLAGS_RELEASE "-O3 -g")
 SET(CMAKE_C_FLAGS_DEBUG   "-O0 -g3")
 
+find_library(HAVE_PTHREAD  NAMES pthread)
+
 add_subdirectory(kjson)
 
 set(ACTOR_SRC actor.c lfqueue.c sched.c)
 add_library(actor SHARED ${ACTOR_SRC})
-target_link_libraries(actor kjson)
-
+target_link_libraries(actor kjson ${HAVE_PTHREAD})
 ## Test cases
 enable_testing()
 add_executable(test_queue test/test_queue.c)
@@ -37,5 +38,3 @@ add_test(test_actor test_actor)
 add_executable(test_ring test/ring.c)
 target_link_libraries(test_ring actor)
 add_test(test_ring test_ring)
-
-
